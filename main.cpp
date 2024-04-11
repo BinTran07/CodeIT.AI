@@ -1,4 +1,3 @@
-main C++
 #include <iostream>
 #include <string>
 #include <Python.h>
@@ -140,7 +139,7 @@ int main() {
     }
 }
 
-main python
+
 # File này đặt tên là diagnose.py
 
 # Hàm dự đoán bệnh sử dụng mô hình AI
