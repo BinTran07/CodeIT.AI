@@ -1,0 +1,102 @@
+import numpy as np
+import tensorflow as tf
+
+class AITeacher:
+    def __init__(self, input_shape, output_classes):
+        self.input_shape = input_shape
+        self.output_classes = output_classes
+        self.model = self.build_model()
+
+    def build_model(self):
+        model = tf.keras.Sequential([
+            tf.keras.layers.Input(shape=self.input_shape),
+            tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
+            tf.keras.layers.MaxPooling2D((2, 2)),
+            tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+            tf.keras.layers.MaxPooling2D((2, 2)),
+            tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dense(self.output_classes)
+        ])
+        return model
+
+    def train(self, X_train, y_train, epochs=10):
+        self.model.compile(optimizer='adam',
+                           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                           metrics=['accuracy'])
+        self.model.fit(X_train, y_train, epochs=epochs)
+
+    def evaluate(self, X_test, y_test):
+        test_loss, test_acc = self.model.evaluate(X_test, y_test, verbose=2)
+        print(f'Test accuracy: {test_acc}')
+
+# Sử dụng AI Teacher để huấn luyện và đánh giá
+input_shape = (28, 28, 1)  # Ví dụ: ảnh kích thước 28x28 pixel, 1 kênh màu
+output_classes = 10  # Ví dụ: 10 lớp cho bài toán nhận dạng chữ số
+
+# Tạo một đối tượng giáo viên AI
+ai_teacher = AITeacher(input_shape, output_classes)
+
+# Tải dữ liệu huấn luyện và kiểm tra từ MNIST dataset hoặc dataset tương tự
+mnist = tf.keras.datasets.mnist
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+X_train, X_test = X_train / 255.0, X_test / 255.0
+
+# Thêm chiều cuối cùng cho ảnh (kích thước batch)
+X_train = X_train[..., tf.newaxis]
+X_test = X_test[..., tf.newaxis]
+
+# Huấn luyện mô hình
+ai_teacher.train(X_train, y_train)
+
+# Đánh giá mô hình
+ai_teacher.evaluate(X_test, y_test)
+
+#include <iostream>
+#include <vector>
+
+// Assume we have a class to represent a neural network
+class NeuralNetwork {
+public:
+    // Constructor
+    NeuralNetwork(int inputSize, int outputSize) {
+        // Initialize neural network with input and output size
+        // This could include initializing weights, biases, etc.
+        // For simplicity, let's assume the network is already initialized
+        std::cout << "Neural network initialized with input size: " << inputSize << " and output size: " << outputSize << std::endl;
+    }
+
+    // Train the neural network
+    void train(std::vector<std::vector<double>>& input, std::vector<int>& labels) {
+        // Training logic would go here
+        std::cout << "Neural network trained" << std::endl;
+    }
+
+    // Evaluate the neural network
+    void evaluate(std::vector<std::vector<double>>& input, std::vector<int>& labels) {
+        // Evaluation logic would go here
+        std::cout << "Neural network evaluated" << std::endl;
+    }
+};
+
+int main() {
+    // Define input and output size
+    int inputSize = 784; // 28x28 pixels
+    int outputSize = 10; // Number of classes
+
+    // Create a neural network object
+    NeuralNetwork aiTeacher(inputSize, outputSize);
+
+    // Assuming we have input data and labels
+    std::vector<std::vector<double>> inputData;
+    std::vector<int> labels;
+
+    // Train the neural network
+    aiTeacher.train(inputData, labels);
+
+    // Evaluate the neural network
+    aiTeacher.evaluate(inputData, labels);
+
+    return 0;
+}
